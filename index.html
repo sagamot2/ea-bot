@@ -5,163 +5,97 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GUS CREATIVE | EA Dashboard</title>
     <style>
-        /* ตั้งค่าพื้นหลังและฟอนต์ */
+        /* สไตล์แบบ Glassmorphism ที่กัสชอบ */
         body {
             margin: 0;
-            padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
+            background: radial-gradient(circle at center, #1a1a2e, #16213e);
             color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
         }
 
-        /* เอฟเฟกต์ฟองสบู่ลอย (Floating Bubbles) */
-        .bubbles {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-        }
-        .bubble {
-            position: absolute;
-            bottom: -100px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            animation: float 10s infinite ease-in-out;
-        }
-        .bubble:nth-child(1) { width: 80px; height: 80px; left: 10%; animation-duration: 8s; }
-        .bubble:nth-child(2) { width: 40px; height: 40px; left: 30%; animation-duration: 5s; animation-delay: 2s; }
-        .bubble:nth-child(3) { width: 60px; height: 60px; left: 70%; animation-duration: 7s; animation-delay: 1s; }
-        .bubble:nth-child(4) { width: 90px; height: 90px; left: 85%; animation-duration: 11s; }
-
-        @keyframes float {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-1000px) scale(1.5); opacity: 0; }
-        }
-
-        /* Glassmorphism UI (การ์ดใส) */
-        .glass-card {
+        .dashboard-card {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 20px;
             padding: 40px;
-            width: 350px;
             text-align: center;
-            z-index: 1;
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            width: 350px;
         }
 
-        h2 {
-            margin-top: 0;
-            font-weight: 300;
-            letter-spacing: 2px;
-            font-size: 1.2rem;
-            color: #a8c0ff;
+        h1 { font-size: 1.5rem; margin-bottom: 30px; letter-spacing: 2px; color: #00d2ff; }
+
+        .stat-group { margin-bottom: 25px; }
+        .label { font-size: 0.8rem; color: #aaa; text-transform: uppercase; }
+        .value { font-size: 2.5rem; font-weight: bold; margin-top: 5px; }
+        .unit { font-size: 1rem; color: #00d2ff; margin-left: 5px; }
+
+        .status-dot {
+            width: 8px; height: 8px; background: #00ff88;
+            border-radius: 50%; display: inline-block;
+            margin-right: 8px; box-shadow: 0 0 10px #00ff88;
+            animation: pulse 1.5s infinite;
         }
 
-        .profit-number {
-            font-size: 3.5rem;
-            font-weight: bold;
-            margin: 20px 0;
-            color: #00ff88;
-            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
         }
 
-        /* Glass Footer & Live Clock */
-        .glass-footer {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            background: rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 15px 0;
-            text-align: center;
-            z-index: 1;
-            font-family: monospace;
-            font-size: 1.1rem;
-            letter-spacing: 1px;
-        }
+        .sync-text { font-size: 0.7rem; color: #666; margin-top: 20px; }
     </style>
 </head>
 <body>
 
-    <div class="bubbles">
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-    </div>
+    <div class="dashboard-card">
+        <h1>GUS SNIPER OS</h1>
+        
+        <div class="stat-group">
+            <div class="label">Total Profit</div>
+            <div class="value" id="profit">0.00<span class="unit">$</span></div>
+        </div>
 
-    <div class="glass-card">
-        <h2>GUS CREATIVE | EA V9</h2>
-        <p>Total Net Profit</p>
-        <div class="profit-number" id="profit-display">Waiting...</div>
-        <p style="color: #ccc; font-size: 0.9rem;" id="winrate-display">Win Rate: --%</p>
-    </div>
+        <div class="stat-group">
+            <div class="label">Win Rate</div>
+            <div class="value" id="winrate">0<span class="unit">%</span></div>
+        </div>
 
-    <footer class="glass-footer">
-        <div id="live-clock">--:--:--</div>
-    </footer>
+        <div class="sync-text">
+            <span class="status-dot"></span> Real-time Syncing...
+        </div>
+    </div>
 
     <script>
-        // 1. ระบบนาฬิกาเดินเรียลไทม์
-        function updateClock() {
-            const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-            document.getElementById('live-clock').textContent = `LIVE: ${hours}:${minutes}:${seconds}`;
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
+        const API_URL = "https://script.google.com/macros/s/AKfycbxLkmgRdttMNm3LCOugbKi-ZpecdOSudbcEJvb9wXHDeAmCR-BKYvrj8ruaK3Z1lXo8KA/exec";
 
-        // 2. ระบบดึงข้อมูลกำไรจาก Google Sheets มาโชว์
-        const API_URL = "https://script.google.com/macros/s/AKfycbxPHmjLt1x9bLhboaWQ9sv7JWcfRvmFTvrdCMArNPEayoBqsDnAXQaQMwhAvsf11X29/exec";
-
-        async function fetchEAData() {
+        async function updateDashboard() {
             try {
-                let response = await fetch(API_URL);
-                let data = await response.json();
+                // ดึงข้อมูลจาก Google Sheets (ท่อ doGet)
+                const response = await fetch(API_URL);
+                const data = await response.json();
+
+                // อัปเดตตัวเลขลงหน้าเว็บ
+                document.getElementById('profit').innerHTML = parseFloat(data.profit).toLocaleString(undefined, {minimumFractionDigits: 2}) + '<span class="unit">$</span>';
+                document.getElementById('winrate').innerHTML = data.winrate + '<span class="unit">%</span>';
                 
-                // ถ้ายอดกำไรไม่ว่างเปล่า ให้อัปเดตตัวเลข
-                if(data.profit !== "" && data.profit !== undefined) {
-                    // ถ้ากำไรติดลบให้เป็นสีแดง ถ้าบวกให้เป็นสีเขียว
-                    let profitElement = document.getElementById('profit-display');
-                    let profitValue = parseFloat(data.profit);
-                    
-                    if(profitValue >= 0) {
-                        profitElement.textContent = "+$" + data.profit;
-                        profitElement.style.color = "#00ff88"; // สีเขียว
-                        profitElement.style.textShadow = "0 0 10px rgba(0, 255, 136, 0.5)";
-                    } else {
-                        profitElement.textContent = "-$" + Math.abs(profitValue).toFixed(2);
-                        profitElement.style.color = "#ff4d4d"; // สีแดง
-                        profitElement.style.textShadow = "0 0 10px rgba(255, 77, 77, 0.5)";
-                    }
-                }
-
-                if(data.winrate !== "" && data.winrate !== undefined) {
-                     document.getElementById('winrate-display').textContent = `Win Rate: ${data.winrate}%`;
-                }
-
+                console.log("Data Synced: ", new Date().toLocaleTimeString());
             } catch (error) {
-                console.log("กำลังรอการเชื่อมต่อข้อมูล...", error);
+                console.error("Sync Error:", error);
             }
         }
 
-        // สั่งให้ดึงข้อมูลใหม่ทุกๆ 3 วินาที (ให้มันกระพริบอัปเดตไวๆ)
-        setInterval(fetchEAData, 3000);
-        fetchEAData();
-    </script>
+        updateDashboard();
 
+        // 🔄 3. ตั้งเวลาให้ดึงข้อมูลใหม่ทุกๆ 5 วินาที (5000 มิลลิวินาที)
+        // กัสสามารถปรับตัวเลขนี้ได้ตามใจชอบ (เช่น 2000 = 2 วินาที)
+        setInterval(updateDashboard, 5000);
+    </script>
 </body>
 </html>
