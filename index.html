@@ -3,99 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GUS CREATIVE | EA Dashboard</title>
+    <title>GUS SNIPER | TERMINAL OS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     <style>
-        /* สไตล์แบบ Glassmorphism ที่กัสชอบ */
+        :root {
+            --bg: #0b0e14;
+            --card: rgba(23, 28, 36, 0.7);
+            --accent: #00d2ff;
+            --green: #00ff88;
+            --red: #ff4d4d;
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
         body {
             margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: radial-gradient(circle at center, #1a1a2e, #16213e);
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            background-image: radial-gradient(circle at 50% 20%, #16213e 0%, #0b0e14 100%);
             color: white;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
+            padding: 20px;
         }
 
-        .dashboard-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 40px;
-            text-align: center;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            width: 350px;
+        .terminal {
+            background: var(--card);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
         }
 
-        h1 { font-size: 1.5rem; margin-bottom: 30px; letter-spacing: 2px; color: #00d2ff; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .logo { font-size: 0.9rem; letter-spacing: 3px; color: var(--accent); font-weight: bold; }
+        
+        .main-stat { text-align: center; margin-bottom: 35px; }
+        .label { font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
+        .balance-value { font-family: 'JetBrains Mono', monospace; font-size: 3rem; font-weight: 700; color: white; }
+        
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
+        .stat-box { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 16px; border: 1px solid var(--border); }
+        .stat-box .val { font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; margin-top: 5px; }
 
-        .stat-group { margin-bottom: 25px; }
-        .label { font-size: 0.8rem; color: #aaa; text-transform: uppercase; }
-        .value { font-size: 2.5rem; font-weight: bold; margin-top: 5px; }
-        .unit { font-size: 1rem; color: #00d2ff; margin-left: 5px; }
-
-        .status-dot {
-            width: 8px; height: 8px; background: #00ff88;
-            border-radius: 50%; display: inline-block;
-            margin-right: 8px; box-shadow: 0 0 10px #00ff88;
-            animation: pulse 1.5s infinite;
+        .history-section { text-align: left; }
+        .history-title { font-size: 0.75rem; color: #555; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
+        .history-list { display: flex; flex-direction: column; gap: 10px; max-height: 200px; overflow-y: auto; }
+        
+        .history-item { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 10px; background: rgba(255,255,255,0.03); border-radius: 10px; font-size: 0.85rem;
         }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.4; }
-            100% { opacity: 1; }
+        .side-badge { padding: 2px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: bold; }
+        .side-buy { background: rgba(0, 255, 136, 0.1); color: var(--green); }
+        .side-sell { background: rgba(255, 77, 77, 0.1); color: var(--red); }
+        
+        .btn-link {
+            display: block; width: 100%; box-sizing: border-box; margin-top: 25px; padding: 14px;
+            background: var(--accent); color: #000; text-decoration: none; border-radius: 14px;
+            font-weight: 700; font-size: 0.9rem; transition: 0.3s; text-align: center;
         }
+        .btn-link:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 210, 255, 0.3); }
 
-        .sync-text { font-size: 0.7rem; color: #666; margin-top: 20px; }
+        .live-tag { display: flex; align-items: center; gap: 6px; font-size: 0.65rem; color: var(--green); }
+        .dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <div class="dashboard-card">
-        <h1>GUS SNIPER OS</h1>
-        
-        <div class="stat-group">
-            <div class="label">Total Profit</div>
-            <div class="value" id="profit">0.00<span class="unit">$</span></div>
+    <div class="terminal">
+        <div class="header">
+            <div class="logo">GUS_SNIPER_V10</div>
+            <div class="live-tag"><div class="dot"></div> LIVE SYNC</div>
         </div>
 
-        <div class="stat-group">
-            <div class="label">Win Rate</div>
-            <div class="value" id="winrate">0<span class="unit">%</span></div>
+        <div class="main-stat">
+            <div class="label">Total Balance</div>
+            <div class="balance-value" id="balance">0.00</div>
+            <div style="color: var(--accent); font-size: 0.8rem; margin-top: 5px;">USD</div>
         </div>
 
-        <div class="sync-text">
-            <span class="status-dot"></span> Real-time Syncing...
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="label">Today Profit</div>
+                <div class="val" id="today-profit" style="color: var(--green);">+0.00</div>
+            </div>
+            <div class="stat-box">
+                <div class="label">Win Rate</div>
+                <div class="val" id="winrate">--%</div>
+            </div>
         </div>
+
+        <div class="history-section">
+            <div class="history-title">RECENT ACTIVITY</div>
+            <div id="history-list" class="history-list">
+                <div style="text-align: center; color: #444; font-size: 0.8rem; padding: 20px;">Waiting for data...</div>
+            </div>
+        </div>
+
+        <a href="https://guseabot.netlify.app/" class="btn-link">RECONNECT TERMINAL</a>
     </div>
 
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbxLkmgRdttMNm3LCOugbKi-ZpecdOSudbcEJvb9wXHDeAmCR-BKYvrj8ruaK3Z1lXo8KA/exec";
 
-        async function updateDashboard() {
+        async function fetchData() {
             try {
-                // ดึงข้อมูลจาก Google Sheets (ท่อ doGet)
                 const response = await fetch(API_URL);
                 const data = await response.json();
-
-                // อัปเดตตัวเลขลงหน้าเว็บ
-                document.getElementById('profit').innerHTML = parseFloat(data.profit).toLocaleString(undefined, {minimumFractionDigits: 2}) + '<span class="unit">$</span>';
-                document.getElementById('winrate').innerHTML = data.winrate + '<span class="unit">%</span>';
                 
-                console.log("Data Synced: ", new Date().toLocaleTimeString());
+                // 1. อัปเดต Balance ปัจจุบัน
+                if (data.balance) {
+                    document.getElementById('balance').textContent = parseFloat(data.balance).toLocaleString(undefined, {minimumFractionDigits: 2});
+                }
+
+                // 2. อัปเดต Win Rate (ถ้ามีส่งมา)
+                if (data.winrate) {
+                    document.getElementById('winrate').textContent = data.winrate + '%';
+                }
+
+                // 3. อัปเดตประวัติการเทรด (ดึงจากอาเรย์ history)
+                if (data.history && data.history.length > 0) {
+                    let historyHTML = '';
+                    let totalDaily = 0;
+
+                    data.history.forEach(item => {
+                        const side = item[1]; // BUY หรือ SELL
+                        const profit = parseFloat(item[3]);
+                        const time = new Date(item[0]).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                        
+                        totalDaily += profit;
+                        const sideClass = side === 'BUY' ? 'side-buy' : 'side-sell';
+                        const priceColor = profit >= 0 ? 'var(--green)' : 'var(--red)';
+
+                        historyHTML += `
+                            <div class="history-item">
+                                <div>
+                                    <span class="side-badge ${sideClass}">${side}</span>
+                                    <span style="margin-left: 8px; color: #888; font-size: 0.7rem;">${time}</span>
+                                </div>
+                                <div style="font-family: 'JetBrains Mono'; color: ${priceColor}; font-weight: bold;">
+                                    ${profit >= 0 ? '+' : ''}${profit.toFixed(2)}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    document.getElementById('history-list').innerHTML = historyHTML;
+                    document.getElementById('today-profit').textContent = (totalDaily >= 0 ? '+' : '') + totalDaily.toFixed(2);
+                }
+
             } catch (error) {
                 console.error("Sync Error:", error);
             }
         }
 
-        updateDashboard();
-
-        // 🔄 3. ตั้งเวลาให้ดึงข้อมูลใหม่ทุกๆ 5 วินาที (5000 มิลลิวินาที)
-        // กัสสามารถปรับตัวเลขนี้ได้ตามใจชอบ (เช่น 2000 = 2 วินาที)
-        setInterval(updateDashboard, 5000);
+        // ดึงข้อมูลทุก 3 วินาที
+        setInterval(fetchData, 3000);
+        fetchData();
     </script>
 </body>
 </html>
