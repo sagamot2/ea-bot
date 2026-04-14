@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GUS CREATIVE | EA Dashboard</title>
+    <style>
+        /* ตั้งค่าพื้นหลังและฟอนต์ */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            color: white;
+        }
+
+        /* เอฟเฟกต์ฟองสบู่ลอย (Floating Bubbles) */
+        .bubbles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .bubble {
+            position: absolute;
+            bottom: -100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 10s infinite ease-in-out;
+        }
+        .bubble:nth-child(1) { width: 80px; height: 80px; left: 10%; animation-duration: 8s; }
+        .bubble:nth-child(2) { width: 40px; height: 40px; left: 30%; animation-duration: 5s; animation-delay: 2s; }
+        .bubble:nth-child(3) { width: 60px; height: 60px; left: 70%; animation-duration: 7s; animation-delay: 1s; }
+        .bubble:nth-child(4) { width: 90px; height: 90px; left: 85%; animation-duration: 11s; }
+
+        @keyframes float {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-1000px) scale(1.5); opacity: 0; }
+        }
+
+        /* Glassmorphism UI (การ์ดใส) */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            width: 350px;
+            text-align: center;
+            z-index: 1;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        h2 {
+            margin-top: 0;
+            font-weight: 300;
+            letter-spacing: 2px;
+            font-size: 1.2rem;
+            color: #a8c0ff;
+        }
+
+        .profit-number {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #00ff88;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+
+        /* Glass Footer & Live Clock */
+        .glass-footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 0;
+            text-align: center;
+            z-index: 1;
+            font-family: monospace;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bubbles">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+
+    <div class="glass-card">
+        <h2>GUS CREATIVE | EA V9</h2>
+        <p>Total Net Profit</p>
+        <div class="profit-number" id="profit-display">+$10,513.16</div>
+        <p style="color: #ccc; font-size: 0.9rem;">Win Rate: 82.5% | Trades: 31,472</p>
+    </div>
+
+    <footer class="glass-footer">
+        <div id="live-clock">--:--:--</div>
+    </footer>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('live-clock').textContent = `LIVE: ${hours}:${minutes}:${seconds}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock(); // เรียกครั้งแรกทันที
+    </script>
+
+</body>
+</html>
