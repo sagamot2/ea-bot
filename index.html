@@ -104,8 +104,8 @@
     <div class="glass-card">
         <h2>GUS CREATIVE | EA V9</h2>
         <p>Total Net Profit</p>
-        <div class="profit-number" id="profit-display">+$10,513.16</div>
-        <p style="color: #ccc; font-size: 0.9rem;">Win Rate: 82.5% | Trades: 31,472</p>
+        <div class="profit-number" id="profit-display">Waiting...</div>
+        <p style="color: #ccc; font-size: 0.9rem;" id="winrate-display">Win Rate: --%</p>
     </div>
 
     <footer class="glass-footer">
@@ -113,6 +113,7 @@
     </footer>
 
     <script>
+        // 1. ระบบนาฬิกาเดินเรียลไทม์
         function updateClock() {
             const now = new Date();
             const hours = String(now.getHours()).padStart(2, '0');
@@ -121,7 +122,45 @@
             document.getElementById('live-clock').textContent = `LIVE: ${hours}:${minutes}:${seconds}`;
         }
         setInterval(updateClock, 1000);
-        updateClock(); // เรียกครั้งแรกทันที
+        updateClock();
+
+        // 2. ระบบดึงข้อมูลกำไรจาก Google Sheets มาโชว์
+        const API_URL = "https://script.google.com/macros/s/AKfycbxPHmjLt1x9bLhboaWQ9sv7JWcfRvmFTvrdCMArNPEayoBqsDnAXQaQMwhAvsf11X29/exec";
+
+        async function fetchEAData() {
+            try {
+                let response = await fetch(API_URL);
+                let data = await response.json();
+                
+                // ถ้ายอดกำไรไม่ว่างเปล่า ให้อัปเดตตัวเลข
+                if(data.profit !== "" && data.profit !== undefined) {
+                    // ถ้ากำไรติดลบให้เป็นสีแดง ถ้าบวกให้เป็นสีเขียว
+                    let profitElement = document.getElementById('profit-display');
+                    let profitValue = parseFloat(data.profit);
+                    
+                    if(profitValue >= 0) {
+                        profitElement.textContent = "+$" + data.profit;
+                        profitElement.style.color = "#00ff88"; // สีเขียว
+                        profitElement.style.textShadow = "0 0 10px rgba(0, 255, 136, 0.5)";
+                    } else {
+                        profitElement.textContent = "-$" + Math.abs(profitValue).toFixed(2);
+                        profitElement.style.color = "#ff4d4d"; // สีแดง
+                        profitElement.style.textShadow = "0 0 10px rgba(255, 77, 77, 0.5)";
+                    }
+                }
+
+                if(data.winrate !== "" && data.winrate !== undefined) {
+                     document.getElementById('winrate-display').textContent = `Win Rate: ${data.winrate}%`;
+                }
+
+            } catch (error) {
+                console.log("กำลังรอการเชื่อมต่อข้อมูล...", error);
+            }
+        }
+
+        // สั่งให้ดึงข้อมูลใหม่ทุกๆ 3 วินาที (ให้มันกระพริบอัปเดตไวๆ)
+        setInterval(fetchEAData, 3000);
+        fetchEAData();
     </script>
 
 </body>
